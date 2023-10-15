@@ -74,8 +74,8 @@ void INIT(){
  *	If within 10 seconds the flag given as a parameter becomes true via another interrupt,
  *	the function returns true immediately. If not, it returns false.
 ```c
-	if (swTimer_waitFlag(10000,&flag))
-		foo();
+if (swTimer_waitFlag(10000,&flag))
+	foo();
 ```
 
 ### API Functions
