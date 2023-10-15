@@ -1,5 +1,5 @@
 
-## API Kullanımı
+## Software Timer On STM32 and Embedded Systems
 
 ### BASIC Usage with SYSTICK
  * Basic usage is basic :)
