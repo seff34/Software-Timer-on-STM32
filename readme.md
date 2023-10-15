@@ -80,19 +80,19 @@ if (swTimer_waitFlag(10000,&flag))
 
 ### API Functions
 ```c
-#define SW_TIMER_LIMIT 	   100
-#define SW_TIMER_MAX_VALUE UINT32_MAX
-#define SW_TIMER_PERIODIC  true
-#define SW_TIMER_ONESHOT   false
-#define SW_TIMER_START     true
-#define SW_TIMER_STOP      false
+#define SW_TIMER_LIMIT 	   	100
+#define SW_TIMER_MAX_VALUE 	UINT32_MAX
+#define SW_TIMER_PERIODIC  	true
+#define SW_TIMER_ONESHOT   	false
+#define SW_TIMER_START     	true
+#define SW_TIMER_STOP      	false
 
 typedef struct SOFTWARE_TIMER_INIT
 {
 	volatile uint32_t counter;			// Timer Millisecond currunt value
-	uint32_t target;					// Timer Millisecond target/interrupt value
-	bool status;						// Timer Status (SW_TIMER_START-SW_TIMER_STOP)
-	bool type;							// Timer Type   (SW_TIMER_PERIODIC-SW_TIMER_ONESHOT)
+	uint32_t target;				// Timer Millisecond target/interrupt value
+	bool status;					// Timer Status (SW_TIMER_START-SW_TIMER_STOP)
+	bool type;					// Timer Type   (SW_TIMER_PERIODIC-SW_TIMER_ONESHOT)
 	void(*callback)(void);				// Timer Callback Function
 }sw_timer_t;
 
