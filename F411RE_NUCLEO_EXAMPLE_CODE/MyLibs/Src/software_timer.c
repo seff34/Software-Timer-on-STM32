@@ -6,93 +6,96 @@
  */
 #include "software_timer.h"
 
-static char runTimeString[20] ;
-static int timerCount = 0 ;
-static sw_timer_t* timerArrays[SW_TIMER_LIMIT];
+static char runTimeString[20];
+static int timerCount = 0;
+static sw_timer_t *timerArrays[SW_TIMER_LIMIT];
 
 extern uint32_t uwTick;
 extern uint32_t uwTickFreq;
 
-sw_timer_t* swTimer_init(const uint32_t target,const bool type,void(*callback)(void))
+sw_timer_t *swTimer_init(const uint32_t target, const bool type, void (*callback)(void))
 {
-	if ( timerCount == SW_TIMER_LIMIT )
+	if (timerCount == SW_TIMER_LIMIT)
 		return NULL;
 
-	sw_timer_t* newTimer = (sw_timer_t*)malloc(sizeof(sw_timer_t));
-	if ( newTimer == NULL )
+	sw_timer_t *newTimer = (sw_timer_t *)malloc(sizeof(sw_timer_t));
+	if (newTimer == NULL)
 		return NULL;
-	newTimer->counter  = 0;
-	newTimer->target   = target;
-	newTimer->status   = SW_TIMER_STOP;
-	newTimer->type     = type;
+	newTimer->counter = 0;
+	newTimer->target = target;
+	newTimer->status = SW_TIMER_STOP;
+	newTimer->type = type;
 	newTimer->callback = callback;
 	timerArrays[timerCount++] = newTimer;
 	return newTimer;
 }
 
-bool swTimer_status(sw_timer_t* swTimer)
+bool swTimer_status(sw_timer_t *swTimer)
 {
-	if ( swTimer == NULL )
+	if (swTimer == NULL)
 		return SW_TIMER_STOP;
 	return swTimer->status;
 }
 
-void swTimer_start(sw_timer_t* swTimer)
+void swTimer_start(sw_timer_t *swTimer)
 {
-	if ( swTimer == NULL )
+	if (swTimer == NULL)
 		return;
 	swTimer->status = SW_TIMER_START;
 }
 
-void swTimer_stop(sw_timer_t* swTimer)
+void swTimer_stop(sw_timer_t *swTimer)
 {
-	if ( swTimer == NULL )
+	if (swTimer == NULL)
 		return;
 	swTimer->status = SW_TIMER_STOP;
 }
 
-void swTimer_reset(sw_timer_t* swTimer)
+void swTimer_reset(sw_timer_t *swTimer)
 {
-	if ( swTimer == NULL )
+	if (swTimer == NULL)
 		return;
 	swTimer->counter = 0;
 }
 
-void swTimer_restart(sw_timer_t* swTimer)
+void swTimer_restart(sw_timer_t *swTimer)
 {
-	if ( swTimer == NULL )
+	if (swTimer == NULL)
 		return;
 	swTimer_reset(swTimer);
 	swTimer_start(swTimer);
 }
 
-uint32_t swTimer_setTargetValue(sw_timer_t* swTimer,uint32_t newTarget)
+uint32_t swTimer_setTargetValue(sw_timer_t *swTimer, uint32_t newTarget)
 {
-	if ( swTimer == NULL )
+	if (swTimer == NULL)
 		return 0;
 	uint32_t oldValue = swTimer->target;
 	swTimer->target = newTarget;
 	return oldValue;
 }
 
-uint32_t swTimer_getTargetValue(const sw_timer_t* swTimer)
+uint32_t swTimer_getTargetValue(const sw_timer_t *swTimer)
 {
-	if ( swTimer == NULL )
+	if (swTimer == NULL)
 		return 0;
 	return swTimer->target;
 }
 
 #ifdef USE_SYSTICK_TIMER
-	static
+static
 #endif
-void swTimer_proses(sw_timer_t* swTimer)
+	void
+	swTimer_proses(sw_timer_t *swTimer)
 {
-	if ( swTimer->status == SW_TIMER_START ){
-		if( ++swTimer->counter >= swTimer->target ){
+	if (swTimer->status == SW_TIMER_START)
+	{
+		if (++swTimer->counter >= swTimer->target)
+		{
 			swTimer_reset(swTimer);
-			if ( swTimer->type == SW_TIMER_ONESHOT)
+			if (swTimer->type == SW_TIMER_ONESHOT)
 				swTimer->status = SW_TIMER_STOP;
-			if ( swTimer->callback != NULL )
+			if (swTimer->callback != NULL)
 				swTimer->callback();
 		}
 	}
@@ -101,32 +104,37 @@ void swTimer_proses(sw_timer_t* swTimer)
 void swTimer_delay(const uint32_t delay)
 {
 	uint32_t start = uwTick;
-	while ( uwTick <= (start + delay));
+	while (uwTick <= (start + delay))
+		;
 }
 
-bool swTimer_waitFlag(const uint32_t delay,bool* flag)
+bool swTimer_waitFlag(const uint32_t delay, bool *flag)
 {
-	if ( flag == NULL )
+	if (flag == NULL)
 		return false;
 	*flag = false;
 	uint32_t start = uwTick;
-	while ( uwTick <= (start + delay)){
-		if ( *flag ){
+	while (uwTick <= (start + delay))
+	{
+		if (*flag)
+		{
 			return true;
 		}
 	}
 	return false;
 }
 
-bool swTimer_waitDoubleFlag(const uint32_t delay,bool* flag1,bool* flag2)
+bool swTimer_waitDoubleFlag(const uint32_t delay, bool *flag1, bool *flag2)
 {
-	if ( flag1 == NULL || flag2 == NULL )
+	if (flag1 == NULL || flag2 == NULL)
 		return false;
 	*flag1 = false;
 	*flag2 = false;
 	uint32_t start = uwTick;
-	while ( uwTick <= (start + delay)){
-		if ( *flag1 || *flag2){
+	while (uwTick <= (start + delay))
+	{
+		if (*flag1 || *flag2)
+		{
 			return true;
 		}
 	}
@@ -135,17 +143,17 @@ bool swTimer_waitDoubleFlag(const uint32_t delay,bool* flag1,bool* flag2)
 
 uint32_t getRunTimeSec()
 {
-	return (uwTick/1000);
+	return (uwTick / 1000);
 }
 
 uint32_t getRunTimeMsec()
 {
-	return (uwTick%1000);
+	return (uwTick % 1000);
 }
 
-const char* getRunTimeStr()
+const char *getRunTimeStr()
 {
-	sprintf(runTimeString,"[%ld:%03ld]",getRunTimeSec(),getRunTimeMsec());
+	sprintf(runTimeString, "[%ld:%03ld]", getRunTimeSec(), getRunTimeMsec());
 	return runTimeString;
 }
 
@@ -153,8 +161,40 @@ const char* getRunTimeStr()
 void HAL_IncTick(void)
 {
 	uwTick += uwTickFreq;
-	for ( int i = 0 ; i < timerCount ; ++i)
+	for (int i = 0; i < timerCount; ++i)
 		swTimer_proses(timerArrays[i]);
 }
 #endif
 
+void SetSoftTimeout(uint32_t *Timer, uint32_t TOValue)
+{
+	if (IsTimeoutInitialised(*Timer))
+	{ // bir nceki timeout bitmis ve timer disable edilmemisse
+		*Timer = uwTick + TOValue;
+		if ((*Timer == UINT32_MAX) || IsTimeoutDisabled(*Timer))
+			*Timer = 1;
+	}
+}
+
+void AddDelayToTimer(uint32_t *Timer, uint32_t Delay)
+{
+	if (!IsTimeoutInitialised(*Timer) && !IsTimeoutDisabled(*Timer))
+	{ // bir nceki timeout bitmemis ve timer disable edilmemisse
+		*Timer += Delay;
+		if (IsTimeoutInitialised(*Timer) || IsTimeoutDisabled(*Timer))
+			*Timer = 1;
+	}
+}
+
+bool CheckSoftTimeout(uint32_t *Timer)
+{
+	if (IsTimeoutInitialised(*Timer) || IsTimeoutDisabled(*Timer))
+		return false;
+
+	else if (*Timer <= uwTick)
+	{
+		InitSoftTimeout(*Timer); // timer timed out.
+		return true;
+	}
+	return false;
+}
